@@ -41,7 +41,7 @@ jobs:
 
       - name: Run Locust regression test
         run: |
-         locust -f locustfile.py --headless --users 10 --spawn-rate 2 --runt-time 1m --host https://localhost:8089 --only-summary --csv=test_results
+         locust -f locustfile.py --headless --users 10 --spawn-rate 2 --run-time 1m --host https://localhost:8089 --only-summary --csv=test_results
         env:
           TARGET_HOST: http://your-application-url.com
         
