@@ -47,8 +47,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
-          pip install locust
+             pip install locust
 
       - name: Run Locust (headless)
         run: |
