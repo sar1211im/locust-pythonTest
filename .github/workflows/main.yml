@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
- load-test:
+ tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -27,9 +27,30 @@ jobs:
 
 
       - name: Install Locust
-        run: pip install locust
+        run: |
+             pip install locust
+             pip install pytest
+  
+  
+ locust-test:
+    runs-on: ubuntu-latest
+    needs: tests     # run Locust AFTER PyTest passes
 
-      - name: Run Locust Load Test
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install locust
+
+      - name: Run Locust (headless)
         run: |
           locust \
             --headless \
@@ -39,17 +60,8 @@ jobs:
             --csv=results \
             --exit-code-on-error 1
 
-      - name: Run Locust regression test
-        run: |
-         locust -f locustfile.py --headless --users 10 --spawn-rate 2 --run-time 1m --host https://localhost:8089 --only-summary --csv=test_results
-        env:
-          TARGET_HOST: http://your-application-url.com
-        
-      
-      - name: Upload CSV Results
-        if: always()
+      - name: Upload Locust results
         uses: actions/upload-artifact@v4
         with:
           name: locust-results
           path: results_*.csv
-
